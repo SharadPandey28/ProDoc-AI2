@@ -1,21 +1,27 @@
+# -------- Streamlit --------
 streamlit
+
+# (dotenv optional — Streamlit secrets replaces it)
 python-dotenv
 
-# --- LangChain stable versions ---
+# -------- LangChain (compatible stable versions) --------
 langchain==0.2.12
 langchain-core==0.2.27
 langchain-community==0.2.10
 langchain-google-genai==1.0.6
 langchain-openai==0.1.7
 
-# --- Model Providers ---
+# -------- Model Providers --------
 openai
 google-generativeai
 
-# --- Vector Store / Documents ---
+# -------- Vector Store / Documents --------
 faiss-cpu
 pypdf
 docx2txt
 
-# --- Embeddings ---
+# -------- Embeddings --------
 sentence-transformers
+
+# -------- Optional but recommended --------
+tiktoken
