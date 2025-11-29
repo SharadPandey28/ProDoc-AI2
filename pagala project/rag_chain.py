@@ -13,24 +13,37 @@ def build_rag_chain(retriever):
     Uses API key from Streamlit secrets.
     """
 
+    # ------------------------
+    # LLM Model
+    # ------------------------
     llm = ChatOpenAI(
         model="gpt-4o-mini",
         temperature=0.2,
-        api_key=st.secrets["OPENAI_API_KEY"]   # <-- added
+        api_key=st.secrets["OPENAI_API_KEY"]
     )
 
+    # ------------------------
+    # Prompt Template
+    # ------------------------
     prompt = PromptTemplate(
         input_variables=["context", "question"],
         template=(
-            "You are an expert assistant.\n"
-            "If context is 'NO_CONTEXT', summarize the entire document clearly and concisely.\n"
-            "Otherwise, answer the question strictly based on the provided context.\n\n"
-            "Context:\n{context}\n\n"
-            "Question: {question}\n\n"
-            "Answer:"
+            "You are an expert AI assistant.\n\n"
+            "Rules:\n"
+            "1. If context = 'NO_CONTEXT', summarize the entire document clearly.\n"
+            "2. Otherwise, answer ONLY using the given context.\n"
+            "3. Keep the answer factual, concise, and well-structured.\n\n"
+            "=== Context ===\n"
+            "{context}\n\n"
+            "=== Question ===\n"
+            "{question}\n\n"
+            "=== Answer ===\n"
         )
     )
 
+    # ------------------------
+    # RAG Chain
+    # ------------------------
     chain = (
         RunnableMap({
             "context": lambda x: retriever.get_relevant_documents(x["question"]),
@@ -43,7 +56,7 @@ def build_rag_chain(retriever):
                     "\n\n".join(doc.page_content for doc in x["context"])
                     if x["context"] else "NO_CONTEXT"
                 ),
-                "question": x["question"]
+                "question": x["question"],
             }
         )
         |
