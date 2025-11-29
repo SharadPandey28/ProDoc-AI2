@@ -14,18 +14,21 @@ def build_profession_chain():
     llm = ChatOpenAI(
         model="gpt-4o-mini",
         temperature=0.3,
-        api_key=st.secrets["OPENAI_API_KEY"]   # <-- important change
+        api_key=st.secrets["OPENAI_API_KEY"]
     )
 
     prompt = PromptTemplate(
         input_variables=["profession", "rag_answer"],
         template=(
             "You are an expert {profession}.\n"
-            "Your job is to write a clear, professional-quality conclusion "
-            "from the perspective of a {profession} based on the analysis below.\n\n"
-            "Analysis / Document Answer:\n{rag_answer}\n\n"
-            "Write a concise, meaningful, and practical conclusion:"
+            "Write a high-quality, clear, and actionable conclusion from the "
+            "{profession}'s perspective based on the analysis below.\n\n"
+            "=== Analysis ===\n"
+            "{rag_answer}\n\n"
+            "=== Conclusion ({profession} Perspective) ===\n"
         )
     )
 
-    return prompt | llm
+    # Chain: Prompt → LLM
+    chain = prompt | llm
+    return chain
