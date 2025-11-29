@@ -1,28 +1,31 @@
 # profession_chain.py
 
+import streamlit as st
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
-from langchain.schema.runnable import RunnablePassthrough
 
+@st.cache_resource
 def build_profession_chain():
+    """
+    Builds the profession-based conclusion generator chain.
+    Uses OpenAI API key from Streamlit secrets.
+    """
 
     llm = ChatOpenAI(
         model="gpt-4o-mini",
-        temperature=0.3
+        temperature=0.3,
+        api_key=st.secrets["OPENAI_API_KEY"]   # <-- important change
     )
 
     prompt = PromptTemplate(
         input_variables=["profession", "rag_answer"],
         template=(
             "You are an expert {profession}.\n"
-            "Based on the document answer below, write a conclusion from the "
-            "{profession}'s perspective with key insights and actionable points.\n\n"
-            "Document Answer:\n{rag_answer}\n\n"
-            "Conclusion:"
+            "Your job is to write a clear, professional-quality conclusion "
+            "from the perspective of a {profession} based on the analysis below.\n\n"
+            "Analysis / Document Answer:\n{rag_answer}\n\n"
+            "Write a concise, meaningful, and practical conclusion:"
         )
     )
 
-    # Build chain using pipeline syntax
-    chain = prompt | llm
-
-    return chain
+    return prompt | llm
